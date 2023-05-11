@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:15-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: order_table_db
+      POSTGRES_USER: elnur
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  spring:
+    container_name: spring
+    build: .
+    ports:
+      - 1234:1234
+    environment:
+      - spring.datasource.url=jdbc:postgresql://postgres:5432/order_table_db
+      - spring.datasource.username=elnur
+      - spring.datasource.password=admin
+      - spring.jpa.hibernate.ddl-auto=create
+      - spring.kafka.bootstrap-servers=192.168.1.166:9092
+    depends_on:
+      - postgres
